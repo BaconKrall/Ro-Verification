@@ -30,12 +30,12 @@ client.aliases = new Discord.Collection();//
 fs.readdir('./komutlar/', (err, files) => {//
     if (err) console.error(err);//
     log(`‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒
-    ${files.length} komut yüklenecek.
+    ${files.length} commands will be loaded.
 ‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒‒`);//
 
     files.forEach(f => {//
         let props = require(`./komutlar/${f}`);//
-        log(`[KOMUT] | ${props.help.name} Eklendi.`);//
+        log(`[COMMAND] | ${props.help.name} has added.`);//
         client.commands.set(props.help.name, props);//
         props.conf.aliases.forEach(alias => {//
             client.aliases.set(alias, props.help.name);//
@@ -138,116 +138,20 @@ client.login(process.env.token);
 
 //--------------------------------------------------------------------------------------\\
 
-client.on('guildMemberAdd', async(member) => {
-let rol = member.guild.roles.cache.find(r => r.name === "CEZALI ROLÜNÜN ADI NEYSE YAZ");
-let cezalımı = db.fetch(`cezali_${member.guild.id + member.id}`)
-let sürejail = db.fetch(`süreJail_${member.id + member.guild.id}`)
-if (!cezalımı) return;
-if (cezalımı === "cezali") {
-member.roles.add(ayarlar.JailCezalıRol)
- 
-member.send("Cezalıyken Sunucudan Çıktığın için Yeniden Cezalı Rolü Verildi!")
- setTimeout(function(){
-    // msg.channel.send(`<@${user.id}> Muten açıldı.`)
-db.delete(`cezali_${member.guild.id + member.id}`)
-    member.send(`<@${member.id}> Cezan açıldı.`)
-    member.roles.remove('cezalı rol id');
-  }, ms(sürejail));
-}
-})
 
-//--------------------------------------------------------------------------------------\\
-
-client.on('guildMemberAdd', async(member) => {
-let mute = member.guild.roles.cache.find(r => r.name === "MUTELİ ROLÜNÜN ADI NEYSE YAZ");
-let mutelimi = db.fetch(`muteli_${member.guild.id + member.id}`)
-let süre = db.fetch(`süre_${member.id + member.guild.id}`)
-if (!mutelimi) return;
-if (mutelimi == "muteli") {
-member.roles.add(ayarlar.MuteliRol)
- 
-member.send("Muteliyken Sunucudan Çıktığın için Yeniden Mutelendin!")
- setTimeout(function(){
-    // msg.channel.send(`<@${user.id}> Muten açıldı.`)
-db.delete(`muteli_${member.guild.id + member.id}`)
-    member.send(`<@${member.id}> Muten açıldı.`)
-    member.roles.remove('muteli rol id');
-  }, ms(süre));
-}
-})
 
 //--------------------------------------------------------------------------------------\\
 
 
-client.on('guildMemberAdd', async member => {
-const data = require('quick.db')
-const asd = data.fetch(`${member.guild.id}.jail.${member.id}`)
-if(asd) {
-let data2 = await data.fetch(`jailrol_${member.guild.id}`)
-let rol = member.guild.roles.cache.get(data2)
-if(!rol) return;
-let kişi = member.guild.members.cache.get(member.id)
-kişi.roles.add(rol.id);
-kişi.roles.cache.forEach(r => {
-kişi.roles.remove(r.id)
-data.set(`${member.guild.id}.jail.${kişi.id}.roles.${r.id}`, r.id )})
-    data.set(`${member.guild.id}.jail.${kişi.id}`)
-  const wasted = new Discord.MessageEmbed()
-  .setAuthor(member.user.tag, member.user.avatarURL({ dynamic : true }))
-  .setColor(`#0x800d0d`)
-  .setDescription(`Dostum hadi ama !!! Jaildan Kaçamazsın ikimizde birbirimizi kandırmayalım...!`)
-  .setTimestamp()
-    member.send(wasted)
-} 
-  
-  
-})
 
 //--------------------------------------------------------------------------------------\\
 
-client.on("message", async msg => {
-  
-  
- const i = await db.fetch(`kufur_${msg.guild.id}`)
-    if (i == "acik") {
-        const kufur = ["oç", "amk", "ananı sikiyim", "ananıskm", "piç", "amk", "amsk", "sikim", "sikiyim", "orospu çocuğu", "piç kurusu", "kahpe", "orospu", "mal", "sik", "yarrak", "am", "amcık", "amık", "yarram", "sikimi ye", "mk", "mq", "aq", "ak", "amq",];
-        if (kufur.some(word => msg.content.includes(word))) {
-          try {
-            if (!msg.member.hasPermission("BAN_MEMBERS")) {
-                  msg.delete();
-                          
-                      return msg.channel.send(new Discord.MessageEmbed().setDescription(`${msg.author} Bu sunucuda küfür filtresi etkin.`).setColor('0x800d0d').setAuthor(msg.member.displayName, msg.author.avatarURL({ dynamic: true })).setTimestamp()).then(x => x.delete({timeout: 5000}));
-  
-            }              
-          } catch(err) {
-            console.log(err);
-          }
-        }
-    }
-    if (!i) return;
-});
 
-client.on("messageUpdate", (oldMessage, newMessage) => {
-  
-  
- const i = db.fetch(`${oldMessage.guild.id}.kufur`)
-    if (i) {
-        const kufur = ["oç", "amk", "ananı sikiyim", "ananıskm", "piç", "amk", "amsk", "sikim", "sikiyim", "orospu çocuğu", "piç kurusu", "kahpe", "orospu", "mal", "sik", "yarrak", "am", "amcık", "amık", "yarram", "sikimi ye", "mk", "mq", "aq", "ak", "amq","amguard","seksüel","sekssüel"];
-        if (kufur.some(word => newMessage.content.includes(word))) {
-          try {
-            if (!oldMessage.member.hasPermission("BAN_MEMBERS")) {
-                  oldMessage.delete();
-                          
-                      return oldMessage.channel.send(new Discord.MessageEmbed().setDescription(`${oldMessage.author} Bu sunucuda küfür filtresi etkin.`).setColor('0x800d0d').setAuthor(oldMessage.member.displayName, oldMessage.author.avatarURL({ dynamic: true })).setTimestamp()).then(x => x.delete({timeout: 5000}));
-  
-            }              
-          } catch(err) {
-            console.log(err);
-          }
-        }
-    }
-    if (!i) return;
-});
+
+
+//--------------------------------------------------------------------------------------\\
+
+
 
 
 //--------------------------------------------------------------------------------------\\
@@ -302,27 +206,7 @@ if(limitt > 1) {
           }
         }
     });
-client.on('clickButton', async (button) => {
-  if(button.id === "eheh") {
-    if (button.guild.id !== "721046034851037354") {
-      
-      button.reply.send("This can't be used!",true)
-    } else {
-    await button.reply.send(`${button.clicker.member}, başarıyla <@&752616051606290503> rolünü aldınız!`, true)
-    button.clicker.member.roles.add("752616051606290503")
-  }
-}})
-client.on('clickButton', async (button) => {
-  if (button.id === "eheheh") {
-    const sebep = await db.fetch(`sebep.${button.clicker.member.id}`) || "Hapis sebebiniz bulunamadı."
 
-await button.reply.send(`Burada olma sebebiniz: ${sebep}`, true);
-  
-  }
-
-         
-         
-})
 
 client.on('ready', () => {
 client.guilds.cache.forEach(guild => {
